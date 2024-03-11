@@ -159,7 +159,7 @@ class Field extends React.Component<InternalFieldProps, FieldState> implements F
       initEntityValue(this);
     }
   }
-
+  // componentDidMount: layout 阶段执行
   public componentDidMount() {
     const { shouldUpdate, fieldContext } = this.props;
 
@@ -169,10 +169,14 @@ class Field extends React.Component<InternalFieldProps, FieldState> implements F
     if (fieldContext) {
       const { getInternalHooks }: InternalFormInstance = fieldContext;
       const { registerField } = getInternalHooks(HOOK_MARK);
+      // !cancelRegisterFunc 取消注册 field, 会在组件卸载的时候执行.
+      // !registerField 在layout阶段执行, 意味着 第一次 Field render的时候 FormStore's fieldEntities 还没有初始化
+      // !因此通过 getFieldsValue() 是无法获取到initValue的
       this.cancelRegisterFunc = registerField(this);
     }
 
-    // One more render for component in case fields not ready
+    //! One more render for component in case fields not ready
+    //! shouldUpdate 会多触发一次 rerender, 第二次 render的时候 fieldEntities已经初始化完毕了.
     if (shouldUpdate === true) {
       this.reRender();
     }
@@ -334,6 +338,7 @@ class Field extends React.Component<InternalFieldProps, FieldState> implements F
         // Handle update by `setField` with `shouldUpdate`
         if (
           shouldUpdate &&
+          //! 设置了 shouldUpdate的item, 不可以设置name
           !namePath.length &&
           requireUpdate(shouldUpdate, prevStore, store, prevValue, curValue, info)
         ) {
@@ -684,6 +689,7 @@ class Field extends React.Component<InternalFieldProps, FieldState> implements F
 function WrapperField<Values = any>({ name, ...restProps }: FieldProps<Values>) {
   const fieldContext = React.useContext(FieldContext);
   const listContext = React.useContext(ListContext);
+  // name string => array
   const namePath = name !== undefined ? getNamePath(name) : undefined;
 
   let key: string = 'keep';

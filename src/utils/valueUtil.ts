@@ -3,6 +3,7 @@ import setValue from 'rc-util/lib/utils/set';
 import type { InternalNamePath, NamePath, Store, EventArgs } from '../interface';
 import { toArray } from './typeUtil';
 
+// https://lodash.com/docs/4.17.15#get
 export { getValue, setValue };
 
 /**

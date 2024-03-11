@@ -61,7 +61,7 @@ export class FormStore {
   private forceRootUpdate: () => void;
 
   private subscribable: boolean = true;
-
+  // 存储所有的表单值
   private store: Store = {};
 
   private fieldEntities: FieldEntity[] = [];
@@ -103,6 +103,7 @@ export class FormStore {
 
   // ======================== Internal Hooks ========================
   private getInternalHooks = (key: string): InternalHooks | null => {
+    // 通过内部的HOOK_MARK进行该方法的私有化处理
     if (key === HOOK_MARK) {
       this.formHooked = true;
 
@@ -187,6 +188,7 @@ export class FormStore {
   };
 
   // ============================= Watch ============================
+  //? 下面是 useWatch 相关的逻辑吗 ？
   private watchList: WatchCallBack[] = [];
 
   private registerWatch: InternalHooks['registerWatch'] = callback => {
@@ -258,6 +260,7 @@ export class FormStore {
     nameList?: NamePath[],
   ): (FieldEntity | InvalidateFieldEntity)[] => {
     if (!nameList) {
+      // 返回所有注册的entity
       return this.getFieldEntities(true);
     }
     const cache = this.getFieldsMap(true);
@@ -287,6 +290,7 @@ export class FormStore {
     }
 
     if (mergedNameList === true && !mergedFilterFunc) {
+      //! mergedNameList: true, return all
       return this.store;
     }
 
@@ -622,8 +626,8 @@ export class FormStore {
     if (initialValue !== undefined) {
       const namePath = entity.getNamePath();
       const prevValue = getValue(this.store, namePath);
-
       if (prevValue === undefined) {
+        // 如果 Form's initialValue 未设置初始值, 使用 field's initialValue作为初始值
         this.updateStore(setValue(this.store, namePath, initialValue));
       }
     }
@@ -633,12 +637,13 @@ export class FormStore {
     const mergedPreserve = fieldPreserve !== undefined ? fieldPreserve : this.preserve;
     return mergedPreserve ?? true;
   };
-
+  // 注册表单项
   private registerField = (entity: FieldEntity) => {
+    //
     this.fieldEntities.push(entity);
     const namePath = entity.getNamePath();
+    // useWatch
     this.notifyWatch([namePath]);
-
     // Set initial values
     if (entity.props.initialValue !== undefined) {
       const prevStore = this.store;
@@ -1025,6 +1030,7 @@ function useForm<Values = any>(form?: FormInstance<Values>): [FormInstance<Value
 
   if (!formRef.current) {
     if (form) {
+      // 传递的form
       formRef.current = form;
     } else {
       // Create a new FormStore if not provided

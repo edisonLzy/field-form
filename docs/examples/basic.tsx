@@ -9,12 +9,18 @@ type FormData = {
 };
 
 export default () => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<FormData>();
+
+  const initialValues: FormData = {
+    name: '1',
+    password: '1'
+  }
 
   return (
     <Form
       form={form}
       preserve={false}
+      initialValues={initialValues}
       onFieldsChange={fields => {
         console.error('fields:', fields);
       }}
@@ -42,6 +48,17 @@ export default () => {
               <Input placeholder="Password 2" />
             </Field>
           ) : null;
+        }}
+      </Field>
+
+      <Field<FormData> shouldUpdate>
+        {(controlledProps, meta, { getFieldsValue}) => {
+          const values = getFieldsValue();
+          console.log(values);
+
+          return <p>
+            this value is {JSON.stringify(values)}
+          </p>
         }}
       </Field>
 

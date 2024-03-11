@@ -72,6 +72,7 @@ const Form: React.ForwardRefRenderFunction<FormInstance, FormProps> = (
   React.useImperativeHandle(ref, () => formInstance);
 
   // Register form into Context
+  // 这里应该是处理多个form联动情况
   React.useEffect(() => {
     formContext.registerForm(name, formInstance);
     return () => {
@@ -141,6 +142,7 @@ const Form: React.ForwardRefRenderFunction<FormInstance, FormProps> = (
 
   const formContextValue = React.useMemo(
     () => ({
+      //! 通过 FieldContext context 传递 form 实例
       ...(formInstance as InternalFormInstance),
       validateTrigger,
     }),
